@@ -3,13 +3,13 @@ import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
 
 public class PercolationStats {
-	private double Vmean;//Æ½¾ùÖµ
+	private double Vmean;//å¹³å‡å€¼
 	
-	private double Vstddev;//±ê×¼²î
+	private double Vstddev;//æ ‡å‡†å·®
 	
 	
 	private double VconfidenceLo;
-	private double VconfidenceHi;//%95ÖÃĞÅÇø¼ä
+	private double VconfidenceHi;//%95ç½®ä¿¡åŒºé—´
 	
 	public PercolationStats(int n, int trials)    // perform trials independent experiments on an n-by-n grid
 	{
@@ -18,7 +18,7 @@ public class PercolationStats {
 		
 		double mean[]=new double[trials];
 		
-		int arry[][]=new int[n*n][2];//Íø¸ñ±éÀúË³ĞòÊı×é³õÊ¼»¯(1£¬1)(1£¬2)(1£¬3).....(n,n-1)(n,n)
+		/*int arry[][]=new int[n*n][2];//ç½‘æ ¼éå†é¡ºåºæ•°ç»„åˆå§‹åŒ–(1ï¼Œ1)(1ï¼Œ2)(1ï¼Œ3).....(n,n-1)(n,n)
 		int k=0;
 		for(int row=1;row<=n;row++)
 			for(int col=1;col<=n;col++)
@@ -26,27 +26,29 @@ public class PercolationStats {
 				arry[k][0]=row;
 				arry[k][1]=col;
 				k++;
-			}
+			}*/
 		
 		
-		for(int i=0;i<trials;i++) {//½øĞĞtrials´ÎÊµÑé
-			k=0;
-			StdRandom.shuffle(arry);//´òÂÒ±éÀúË³Ğò
-			Percolation per=new Percolation(n);
+		for(int i=0;i<trials;i++) {//è¿›è¡Œtrialsæ¬¡å®éªŒ
+			/*k=0;
+			StdRandom.shuffle(arry);//æ‰“ä¹±éå†é¡ºåº
+*/			Percolation per=new Percolation(n);
 			
 			while(!per.percolates()) 
-				per.open(arry[k][0], arry[k++][1]);
+				
+				per.open(StdRandom.uniform(1, n+1), StdRandom.uniform(1, n+1));
+				//per.open(arry[k][0], arry[k++][1]);
 			
-			mean[i]=(double)per.numberOfOpenSites()/(n*n);//¼ÇÂ¼¸ÅÂÊ
+			mean[i]=(double)per.numberOfOpenSites()/(n*n);//è®°å½•æ¦‚ç‡
 			//System.out.println("trials++");
 		}
 		
 		
-		//¸ù¾İmeanÊı×é¼ÆËã
+		//æ ¹æ®meanæ•°ç»„è®¡ç®—
 		Vmean=StdStats.mean(mean);
 		Vstddev=StdStats.stddev(mean);
 		VconfidenceLo=Vmean-(1.96*Vstddev)/Math.sqrt(trials);
-		VconfidenceHi=Vmean+1.96/Math.sqrt(trials);
+		VconfidenceHi=Vmean+(1.96*Vstddev)/Math.sqrt(trials);
 	}   
 	public double mean()                          // sample mean of percolation threshold
 	{
@@ -67,7 +69,7 @@ public class PercolationStats {
 		if(args.length!=2) 
 		    System.out.println("command line wrong");
 		
-		//»ñÈ¡ÃüÁîĞĞ²ÎÊı
+		//è·å–å‘½ä»¤è¡Œå‚æ•°
 		int n=Integer.parseInt(args[0]);
 		int T=Integer.parseInt(args[1]);
 		//System.out.println(n+T);

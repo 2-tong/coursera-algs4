@@ -4,13 +4,13 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;;
 public class Percolation {
 	
 	
-	private WeightedQuickUnionUF union;
-	private boolean[] site;//¼ÇÂ¼Íø¸ñ¿ª¹Ø×´Ì¬
-	private int gridsize;//¾ØÕó±ß³¤
-	private int allsize;//Êı×é×Ü´óĞ¡£¨gridsize^2+2£©
-	private int openNum=0;//Íø¸ñ´ò¿ªÊıÄ¿
+	private WeightedQuickUnionUF union,auxUnion;
+	private boolean[] site;//è®°å½•ç½‘æ ¼å¼€å…³çŠ¶æ€
+	private int gridsize;//çŸ©é˜µè¾¹é•¿
+	private int allsize;//æ•°ç»„æ€»å¤§å°ï¼ˆgridsize^2+2ï¼‰
+	private int openNum=0;//ç½‘æ ¼æ‰“å¼€æ•°ç›®
 	
-	private int trans(int row,int col)//×ø±ê×ª»»
+	private int trans(int row,int col)//åæ ‡è½¬æ¢
 	{
 		if(row<1||row>gridsize||col<1||col>gridsize)
 			throw new IllegalArgumentException("wrong row or col value with"+row+","+col);
@@ -22,19 +22,22 @@ public class Percolation {
 
 	public Percolation(int n)                // create n-by-n grid, with all sites blocked
 	{
+		if(n<1)
+			throw new IllegalArgumentException("Arguments out of bound");
 		gridsize=n;
 		
 		allsize=n*n+2;
 		
 		union=new WeightedQuickUnionUF(allsize);
+		auxUnion=new WeightedQuickUnionUF(allsize-1);
 		site=new boolean[allsize];
 		
 		
-		site[0]=true;//¶¥²¿ĞéÄâ¸ñµã
+		site[0]=true;//é¡¶éƒ¨è™šæ‹Ÿæ ¼ç‚¹
 		for(int i=1;i<allsize-1;i++) {
 			site[i]=false;
 		}
-		site[allsize-1]=true;//µ×²¿ĞéÄâ¸ñµã
+		site[allsize-1]=true;//åº•éƒ¨è™šæ‹Ÿæ ¼ç‚¹
 	} 
 	
 	
@@ -42,7 +45,7 @@ public class Percolation {
 	{
 		//System.out.println("open:"+row+","+col);
 		
-		int arr[][]= {{0,1},{0,-1},{1,0},{-1,0}};//±éÀúÓÒ£¬×ó£¬ÉÏ£¬ÏÂÓÃµ½µÄÊı×é
+		int arr[][]= {{0,1},{0,-1},{1,0},{-1,0}};//éå†å³ï¼Œå·¦ï¼Œä¸Šï¼Œä¸‹ç”¨åˆ°çš„æ•°ç»„
 		int n=trans(row,col);
 		
 		if(site[n])return;
@@ -50,21 +53,25 @@ public class Percolation {
 		site[n]=true;
 		openNum++;
 		
-		//µÚÒ»ĞĞÓë×îºóÒ»ĞĞĞèÒªÁ¬½Ó¶ÔÓ¦ĞéÄâÍø¸ñ
-		if(row==1)
+		//ç¬¬ä¸€è¡Œä¸æœ€åä¸€è¡Œéœ€è¦è¿æ¥å¯¹åº”è™šæ‹Ÿç½‘æ ¼
+		if(row==1) {
 			union.union(n, 0);
+			auxUnion.union(n, 0);
+		}
 		if(row==gridsize)
 			union.union(n, allsize-1);
 		
 		//System.out.println(++openNum);
-		for(int i=0;i<4;i++) {//±éÀúÉÏÏÂ×óÓÒ
+		for(int i=0;i<4;i++) {//éå†ä¸Šä¸‹å·¦å³
 			int trow=row+arr[i][0];
 			int tcol=col+arr[i][1];
 			
 			if(trow>=1 && trow<=gridsize && tcol>=1 && tcol<=gridsize)
 			{
-				if(site[trans(trow,tcol)])
+				if(site[trans(trow,tcol)]) {
 					union.union(n, trans(trow,tcol));
+					auxUnion.union(n, trans(trow,tcol));
+				}
 			}	
 		}
 		
@@ -79,7 +86,7 @@ public class Percolation {
 	
 	public boolean isFull(int row, int col)  // is site (row, col) full?
 	{
-		return union.connected(trans(row,col), 0);
+		return auxUnion.connected(trans(row,col), 0);
 	}  
 	
 	
