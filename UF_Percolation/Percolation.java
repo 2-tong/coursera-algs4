@@ -2,16 +2,21 @@
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;;
 
 public class Percolation {
-	private WeightedQuickUnionUF union;
-	private boolean[] site;
-	private int gridsize;
-	private int allsize;
-	private int openNum=0;
 	
-	private int trans(int row,int col) {
+	
+	private WeightedQuickUnionUF union;
+	private boolean[] site;//记录网格开关状态
+	private int gridsize;//矩阵边长
+	private int allsize;//数组总大小（gridsize^2+2）
+	private int openNum=0;//网格打开数目
+	
+	private int trans(int row,int col)//坐标转换
+	{
 		if(row<1||row>gridsize||col<1||col>gridsize)
 			throw new IllegalArgumentException("wrong row or col value with"+row+","+col);
-		return (row-1)*gridsize+col;}
+		return (row-1)*gridsize+col;
+	}
+	
 	
 	
 
@@ -23,11 +28,13 @@ public class Percolation {
 		
 		union=new WeightedQuickUnionUF(allsize);
 		site=new boolean[allsize];
-		site[0]=true;
+		
+		
+		site[0]=true;//顶部虚拟格点
 		for(int i=1;i<allsize-1;i++) {
 			site[i]=false;
 		}
-		site[allsize-1]=true;
+		site[allsize-1]=true;//底部虚拟格点
 	} 
 	
 	
@@ -35,24 +42,29 @@ public class Percolation {
 	{
 		//System.out.println("open:"+row+","+col);
 		
-		int arr[][]= {{0,1},{0,-1},{1,0},{-1,0}};
+		int arr[][]= {{0,1},{0,-1},{1,0},{-1,0}};//遍历右，左，上，下用到的数组
 		int n=trans(row,col);
 		
 		if(site[n])return;
 		
 		site[n]=true;
+		openNum++;
+		
+		//第一行与最后一行需要连接对应虚拟网格
 		if(row==1)
 			union.union(n, 0);
 		if(row==gridsize)
 			union.union(n, allsize-1);
-		openNum++;
+		
 		//System.out.println(++openNum);
-		for(int i=0;i<4;i++) {
+		for(int i=0;i<4;i++) {//遍历上下左右
 			int trow=row+arr[i][0];
 			int tcol=col+arr[i][1];
+			
 			if(trow>=1 && trow<=gridsize && tcol>=1 && tcol<=gridsize)
 			{
-				if(site[trans(trow,tcol)])	union.union(n, trans(trow,tcol));
+				if(site[trans(trow,tcol)])
+					union.union(n, trans(trow,tcol));
 			}	
 		}
 		
