@@ -106,6 +106,12 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 	{
 		private int pos = first;
 		private int left = num;
+		private int[] iteratorarry = new int [num];
+		public RQueueIterator() 
+		{
+			for(int i=0;i<num;i++)iteratorarry[i]=i;
+			StdRandom.shuffle(iteratorarry);
+		}
 		
 		public boolean hasNext(){return left != 0;}
 		public void remove() {throw new UnsupportedOperationException("UnsupportedOperation  DequeIterator::remove");}
@@ -115,15 +121,16 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 			//System.out.println(pos);
 			//System.out.println(left);
 			
-			int random = StdRandom.uniform(left--);
+			/*int random = StdRandom.uniform(left--);
 			if((random += pos) >= arry.length) random -= arry.length;
 			
 			Item item = arry[random]; 
 			arry[random] = arry[pos];
 			arry[pos] = item;
-			if(++pos >= arry.length) pos = 0;
-			
-			return item;
+			if(++pos >= arry.length) pos = 0;*/
+			int random = iteratorarry[left-- - 1];
+			if((random += pos) >= arry.length) random -= arry.length;			
+			return arry[random];
 		}
 	}
 	   
